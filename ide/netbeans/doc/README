@@ -1,0 +1,110 @@
+How to implement Functor in Java
+
+There is a notion of Functor in Standard ML although it was not fully explored.
+The basic idea is to instantiate another class from functor taking another classes.
+
+Here the return class's type must be defined by signature, which is sort of interface with static properties.
+
+The signature must support static method to generate the instance. But in Java, interface is for the instance, not possible.
+for instance we may want to write this kind of signature.
+
+signature S_Ring {
+    static S_Ring zero;
+    static S_Ring unit;
+    S_Ring add(S_Ring elem);
+    S_Ring subst(S_Ring elem);
+    S_Ring mult(S_Ring elem);
+}
+
+Often the instance creation method has representation dependency, so it can not be part of signature.
+
+Signature may have a dependency to other signature, consider R-module:
+
+signature S_RModule<R: S_Ring> {
+    structure coefficientRing: S_Ring = R
+    static Sig_Ring zero;
+    S_RModule<R> add(S_RModule<R> elem);
+    S_RModule<R> mult(S_Ring r);
+}
+
+Signature is type of structure. structure is a sort of class with signature type.
+
+structure IntegerRing: S_Ring {
+    static IntegerRing zero = new IntegerRing(0);
+    static IntegerRing unit = new IntegerRing(1);
+
+    // representation
+    final int i;
+    IntegerRing(final int i) {
+        this.i = i;
+    }
+    IntegerRing add(final IntegerRing elem) {
+        return new IntegerRing(i+elem.i);
+    }
+    IntegerRing subst(final IntegerRing elem) {
+        return new IntegerRing(i-elem.i);
+    }
+    IntegerRing mult(final IntegerRing elem) {
+        return new IntegerRing(i*elem.i);
+    }
+}
+
+This can be interpreted as normal Java class except signature declared part.
+This can be interpreted in Java using two interfaces, one is for static part, the other is for instance part. For example:
+
+
+interface IStaticRing {
+    IRing zero();
+    IRing unit();
+}
+
+interface IRing {
+    IStaticRing STATIC();
+
+    IRing add(IRing elem);
+    IRing subst(IRing elem);
+    IRing mult(IRing elem);
+}
+
+class IntegerRing implements IRing {
+    private final static IStaticRing STATIC = new IStaticRing() {
+        private static final IntegerRing zero = new IntegerRing(0);
+        private static final IntegerRing unit = new IntegerRing(1);
+
+        public IRing zero() {
+            return zero;
+        }
+        public IRing unit() {
+            return unit;
+        }
+    }
+
+    // this is to enforce the interface requirement.
+    public IStaticRing STATIC() {
+        return STATIC;
+    }
+
+    // representation
+    final int i;
+    IntegerRing(final int i) {
+        this.i = i;
+    }
+    IntegerRing add(final IntegerRing elem) {
+        return new IntegerRing(i+elem.i);
+    }
+    IntegerRing subst(final IntegerRing elem) {
+        return new IntegerRing(i-elem.i);
+    }
+    IntegerRing mult(final IntegerRing elem) {
+        return new IntegerRing(i*elem.i);
+    }
+
+    public static void main(String[] args) {
+        IntegerRing two = STATIC.unit.add(STATIC.unit);
+        IntegerRing i1 = new IntegerRing(3);
+        IntegerRing i2 = new IntegerRing(33);
+        IntegerRing i3 = i1.mult(i2);
+    }
+}
+
+This code achieves interface level type constraints for static property. But one week point is instance creation.
