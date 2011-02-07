@@ -245,18 +245,6 @@ public class PolynomialRing<C_INST extends IAbstractRing.INST<C_INST>, C_CLASS e
         public String toString() {
             final StringBuilder sb = new StringBuilder();
             return toString(sb, "");
-            /*
-            boolean is_first = true;
-            for (final Term term: terms) {
-                if (is_first) {
-                    is_first = false;
-                } else {
-                    sb.append("+");
-                }
-                sb.append(term.toString());
-            }
-            return sb.toString();
-            */
         }
 
         public String toString(final StringBuilder sb, final String vars) {

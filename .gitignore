@@ -3,6 +3,9 @@
 *.log
 *.orig
 *~
+*.toc
+*.aux
+*.backup
 ide/netbeans/nbproject/private/*
 ide/netbeans/build/*
 ide/netbeans/dist/*

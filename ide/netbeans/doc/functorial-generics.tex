@@ -1,0 +1,144 @@
+\documentclass[8pt]{article}
+\usepackage{listings}
+\lstset{
+language=Java,
+basicstyle=\footnotesize,
+}
+
+\begin{document}
+%\tableofcontents % This can go after the abstract, too.
+%\begin{titlepage} % Uncomment for a separate title page
+\title{Funtorial Generic Class Programming Pattern} % type title between braces
+\author{Nicolas Calathus} % type author(s) between braces
+%\url{https://github.com/calathus/functorial-generics}
+\date{\today}
+\maketitle
+%\end{titlepage}
+\begin{abstract}
+This is an atempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.
+\end{abstract}
+\tableofcontents
+
+\section{Introduction} % section 1; use ‘‘\section*’’ to omit numeration
+
+This is an attempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.\\
+The main advantage of functorial approach is the ability to compose a new class from existing classes through generics.
+This capability has been almost ignored in Java(generally in most programming language in fact).
+The key obstacle in Java to support this style was its weak generic feature. In particular, the generics type parameters are not scoped with static property of the generics class.
+Often in order to create a new class, it becomes crucial to access parameter class's static information.\\
+
+But in Java, these generic parameters can be used to constraint the instance property only.
+Also parametrized class itself does not enforce unique parametrized type for all the instances. since each time, we invoke new A$<$B$>$(), we may change B to other B1.
+As a result, B will not enforce class level restriction with this style.\\
+
+There are similar restrictions for interface, namely interface can be used only for specifying instance level constraints. 
+It cannot specify a class level constraints, such as static methods, neither it can allow to access class property of parametrized class at run-time.
+These constraints are too weak to develop a framework to build library which allow to have 'recursive' generic class library, in which applied generics classes can be used as the parameter types for the same generics class from which they generated.    
+This kind of situation can be found in abstract algebra in Mathematics quite often.\\
+
+In this sample code, we use polynomial ring for the principal means to explore this approach since it is not too trivial and yet it is not too complex.
+This polynomial ring can be defined from another coefficient ring.
+So the polynomial ring can be defined as a generic class which takes another ring in the generic type parameter, and create polynomial ring which again implements ring 'signature'(or interface).
+Therefore, it is possible to use this generated polynomial ring class as a type parameter class for the coefficient ring again.
+In this way, we can create n-variable polynomial ring from (n-1) variable polynomial ring(starting from another coefficient ring).
+
+\section{Approach}
+These Java generics constraints will enforce certain patterns of (generic) class definition.
+Also in order to allow to extract proper type information, generic interfaces are required.
+
+This pattern does not address data hiding(abstraction) although it will be addressed in future.
+The goal of this approach is to avoid casting, and utilizing static type checking, and easy sub-classing/implementation for interface.
+
+\section{What is required for future Java}
+Although this approach will enable to develop 'functorical' generic class in systematic way.
+But also this indicate the weakness of Java as a programming language.
+In general, if this style were well established as macro like pattern, it would be easy to incorporate in Java compiler directly.
+For instance it might be interesting to modify openJDK to support this approach.
+
+\section{Some comments on Java generics}
+There are a few oddity we may face when using this approach.
+Largely it came form how Java inner (generic) class are implemented.
+Even though these class are inner class, the class itself does not inherit the class identity from the parent class. Therefore even conceptually it should map to different inner class which are associated to different parametrized class(or just another instance of the parent class), there are treated as the same class.
+These parametrized class dependency can be achieve only through run-time Type information and actually, the difference cannot be detected at compile type. This is a limitation of using Java.
+Although conceptually dirty, but there are some advantage for this treatment of inner class. since it will reduce number of different class significantly, it would improve run-time performance.
+
+But the main focus here is not to provide satisfactory static type checking, but to enable to utilize existing class through generics mechanism as functor.
+
+\section{Goal of design}
+This code is essentially a collection of sample programs.
+So there is no common library to support this approach.
+The point here is to suggest to design pattern to enable to develop functor like generic class library.
+
+\section{Sample top level codes}
+The most elaborated example here is the creation of a two variable polynomial ring.
+
+This example is a bit messy for repeated generic class declaration, but it can be shorten if we define a subclass for the applied generic class. 
+
+here is the top level code:
+\begin{lstlisting}
+	final NumericRing<Float>.CLASS FloatNumeral = NumericRing.CLASS(Float.class);
+        final NumericPolynomialRing<Float>.CLASS NFloatPolynomialRing = NumericPolynomialRing.CLASS(FloatNumeral, "X");
+        {
+            final NumericPolynomialRing<Float>.INST nr0 = NFloatPolynomialRing.create(FloatNumeral.unit(), FloatNumeral.unit(), FloatNumeral.unit());
+            final NumericPolynomialRing<Float>.INST nr1 = NFloatPolynomialRing.create(2.1f, 3f, 4f, 6.5f, 58f, 3f);
+            final NumericPolynomialRing<Float>.INST nr2 = NFloatPolynomialRing.create(12f, 31.9f, 14f, 16f, 8f, 13f);
+            final NumericPolynomialRing<Float>.INST nr3 = NFloatPolynomialRing.create(14f, 16f, 8f, 13f);
+            final NumericPolynomialRing<Float>.INST nr4 = NFloatPolynomialRing.create(8f, 13f);
+            final NumericPolynomialRing<Float>.INST nr5 = NFloatPolynomialRing.create(14f, 0f, 8f, 13f);
+            final NumericPolynomialRing<Float>.INST nr6 = nr1.mult(nr2);
+            System.out.println(">> nr1: "+nr1);
+            System.out.println(">> nr2: "+nr2);
+            System.out.println(">> nr3: "+nr3);
+            System.out.println(">> nr4: "+nr4);
+            System.out.println(">> nr5: "+nr5);
+            System.out.println(">> nr6: "+nr6);
+
+            final PolynomialRing<NumericPolynomialRing<Float>.INST, NumericPolynomialRing<Float>.CLASS>.CLASS NFloatPolynomial2Ring = PolynomialRing.CLASS(NFloatPolynomialRing, "Y");
+
+            final PolynomialRing<NumericPolynomialRing<Float>.INST, NumericPolynomialRing<Float>.CLASS>.INST nr1a = NFloatPolynomial2Ring.create(nr0, nr0, nr0);
+            final PolynomialRing<NumericPolynomialRing<Float>.INST, NumericPolynomialRing<Float>.CLASS>.INST nr2a = NFloatPolynomial2Ring.create(nr4, nr5, nr6);
+            final PolynomialRing<NumericPolynomialRing<Float>.INST, NumericPolynomialRing<Float>.CLASS>.INST nr3a = nr1a.mult(nr1a);
+            System.out.println(">> nr1a: "+nr1a);
+            System.out.println(">> nr2a: "+nr2a);
+            System.out.println(">> nr3a: "+nr3a);
+        }
+\end{lstlisting}
+
+output of the execution of this code.
+
+\begin{lstlisting}
+>> nr1: (2.1)X^5+(3.0)X^4+(4.0)X^3+(6.5)X^2+(58.0)X+(3.0)
+>> nr2: (12.0)X^5+(31.9)X^4+(14.0)X^3+(16.0)X^2+(8.0)X+(13.0)
+>> nr3: (14.0)X^3+(16.0)X^2+(8.0)X+(13.0)
+>> nr4: (8.0)X+(13.0)
+>> nr5: (14.0)X^3+(8.0)X+(13.0)
+>> nr6: (25.199999)X^10+(102.99)X^9+(173.09999)X^8+(281.2)X^7+(1024.15)X^6+(2092.5)X^5+(1082.7)X^4+(1074.0)X^3+(596.5)X^2+(778.0)X+(39.0)
+>> nr1a: (1.0)X^2*Y^2+(1.0)X*Y^2+(1.0)Y^2+(1.0)X^2*Y+(1.0)X*Y+(1.0)Y+(1.0)X^2+(1.0)X+(1.0)
+>> nr2a: (8.0)X*Y^2+(13.0)Y^2+(14.0)X^3*Y+(8.0)X*Y+(13.0)Y+(25.199999)X^10+(102.99)X^9+(173.09999)X^8+(281.2)X^7+(1024.15)X^6+(2092.5)X^5+(1082.7)X^4+(1074.0)X^3+(596.5)X^2+(778.0)X+(39.0)
+>> nr3a: (1.0)X^4*Y^4+(2.0)X^3*Y^4+(3.0)X^2*Y^4+(2.0)X*Y^4+(1.0)Y^4+(2.0)X^4*Y^3+(4.0)X^3*Y^3+(6.0)X^2*Y^3+(4.0)X*Y^3+(2.0)Y^3+(3.0)X^4*Y^2+(6.0)X^3*Y^2+(9.0)X^2*Y^2+(6.0)X*Y^2+(3.0)Y^2+(2.0)X^4*Y+(4.0)X^3*Y+(6.0)X^2*Y+(4.0)X*Y+(2.0)Y+(1.0)X^4+(2.0)X^3+(3.0)X^2+(2.0)X+(1.0)
+\end{lstlisting}
+
+
+\section{Installation}
+this project can be imported to netbeans.
+The project file is under ide/netbeans, you can import from this location.
+
+For running sample, you can select NumericPolynomialRing.java and right click to choose 'run file'.
+
+
+\section{Reference}
+See some Standard ML papers/books.
+Old papers/books around late 80's.
+
+\appendix
+\section{API}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/api/IAbstractRing.java}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/api/INumericRing.java}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/api/IPolynomialRing.java}\\
+
+\section{Representation}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/rep/NumericRing.java}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/rep/PolynomialRing.java}\\
+\lstinputlisting{/share/NetBeansProjects/functorial-generics/src/main/java/com/ncalathus/sample/ring/rep/NumericPolynomialRing.java}\\
+
+\end{document}
