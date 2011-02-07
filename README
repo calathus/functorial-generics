@@ -3,7 +3,6 @@
 Author: nicolas calathus
 Date: Feb 6, 2011
 
-
 -----
 
 This is an atempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.
@@ -111,5 +110,16 @@ output of execution thsi code.
 >> nr2a: (8.0)X*Y^2+(13.0)Y^2+(14.0)X^3*Y+(8.0)X*Y+(13.0)Y+(25.199999)X^10+(102.99)X^9+(173.09999)X^8+(281.2)X^7+(1024.15)X^6+(2092.5)X^5+(1082.7)X^4+(1074.0)X^3+(596.5)X^2+(778.0)X+(39.0)
 >> nr3a: (1.0)X^4*Y^4+(2.0)X^3*Y^4+(3.0)X^2*Y^4+(2.0)X*Y^4+(1.0)Y^4+(2.0)X^4*Y^3+(4.0)X^3*Y^3+(6.0)X^2*Y^3+(4.0)X*Y^3+(2.0)Y^3+(3.0)X^4*Y^2+(6.0)X^3*Y^2+(9.0)X^2*Y^2+(6.0)X*Y^2+(3.0)Y^2+(2.0)X^4*Y+(4.0)X^3*Y+(6.0)X^2*Y+(4.0)X*Y+(2.0)Y+(1.0)X^4+(2.0)X^3+(3.0)X^2+(2.0)X+(1.0)
 
+
+[install]
+this project can be imported to netbeans.
+The project file is under ide/netbeans, you can import from this location.
+
+For running sample, you can select NumericPolynomialRing.java and right click to choose 'run file'.
+
+
 [reference]
 See some Standard ML papers/books.
+
+[etc]
+Comments are wellcome, please send an e-mail to calathus@gmail.com
