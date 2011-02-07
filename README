@@ -4,68 +4,69 @@ Author: nicolas calathus
 Date: Feb 6, 2011
 
 -----
+-----
 
-This is an atempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.
+This is an attempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.
 
-The main advantage of functorial approach is the ability to compose a new class from exisiting classes through generics.
+The main advantage of functorial approach is the ability to compose a new class from existing classes through generics.
 
 This capability has been almost ignored in Java(generally in most programming language in fact).
 
-The key obstacle in Java to support this style was its weak generic feature. In particular, the geneics type parameters are not scoped with static property of the generics class.
+The key obstacle in Java to support this style was its weak generic feature. In particular, the generics type parameters are not scoped with static property of the generics class.
 
-Often in ordr to create new new classes, it becomes crucial to access parameter class's static information.
+Often in order to create new new classes, it becomes crucial to access parameter class's static information.
 
 But in Java, these generic parameters can be used to constraint the instance property only.
 
-Also parametrized class itself does not enforce unique parametrized type for all the instances. since each time, we invoke new A<B>(), we may change B to other B1.
+Also parametrized class itself does not enforce unique parametrized type for all the instances. since each time, we invoke new A&lt;B&gt;(), we may change B to other B1.
 As a result, B will not enforce class level restriction with this style.
 
 There are similar restrictions for interface, namely interface can be used only for specifying instance level constraints. 
-It cannot speficy a class level constraints, such as static methods, neither it can allow to access class property of parametrized class at runtime.
+It cannot specify a class level constraints, such as static methods, neither it can allow to access class property of parametrized class at run-time.
 
 These constraints are too weak to develop a framework to build library which allow to have 'recursive' generic class library, in which applied generics classes can be used as the parameter types for the same generics class from which they generated.    
 
-This kind of situation can be found in abstract algebra in Mathemetics quite often.
+This kind of situation can be found in abstract algebra in Mathematics quite often.
 
 In this sample code, we use polynomial ring for the principal means to explore this approach since it is not too trivial and yet it is not too complex.
 
-This polynomial ring can be defined from aother coefficient ring.
-So the polynomial ring can be defined as a generic class which takes another ring in the generic type parameter, and create polynomial ring which again inplements ring 'signature'(or interface).
-Therefore, it is possible to use this generated polynomial ring class as a type parameter class for the coeffcient ring again.
-In this way, we can create n-variable polynomial ring from (n-1) variable porinimial ring(starting from anotehr coeffient ring).
+This polynomial ring can be defined from another coefficient ring.
+So the polynomial ring can be defined as a generic class which takes another ring in the generic type parameter, and create polynomial ring which again implements ring 'signature'(or interface).
+Therefore, it is possible to use this generated polynomial ring class as a type parameter class for the coefficient ring again.
+In this way, we can create n-variable polynomial ring from (n-1) variable polynomial ring(starting from another coefficient ring).
 
 [approach]
-These Java generics constraints will enfore certain patterns of (generic) class definition.
-Also in order to allow to exract proper type information, generic interfaces are required.
+These Java generics constraints will enforce certain patterns of (generic) class definition.
+Also in order to allow to extract proper type information, generic interfaces are required.
 
 This pattern does not address data hiding(abstraction) although it will be addressed in future.
 The goal of this approach is to avoid casting, and utilizing static type checking, and easy subclassing/implementation for interface.
 
 [What is required for future Java]
-Although this approach will enable to develop 'functorical' generic class in systematic way.
-But also thi sindicate the weakness of Java as a prograqmming language.
+Although this approach will enable to develop 'functorial' generic class in systematic way.
+But also this indicate the weakness of Java as a prograqming language.
 In general, if this style were well established as macro like pattern, it would be easy to incorporate in Java compiler directly.
-For instance it might be interetsting to modify openJDK to support this approach.
+For instance it might be interesting to modify openJDK to support this approach.
 
 [Some notice for Java generics]
 There are a few oddity we may face when using this approach.
-Largely it came form how Java inner (greric) class are implemented.
-Even though these class are inner class, the class itself does not inherit the class identity from the parent class. Therefore even conceptually it should map to different inner class which are associated to different parametrized class(or just another instance of the parent class), there are treate as the same class.
-These parametrized class dependency can be achieve only through runntime Type information and actually, the difference cannot be detected at compile type. This is a limitation of using Java.
-Although conceptually dirty, but there are some advantage for this treatement of innce class. sinece it will reduce number of differnt class significantly, it would improve runtime performance.
+Largely it came form how Java inner (generic) class are implemented.
+Even though these class are inner class, the class itself does not inherit the class identity from the parent class. Therefore even conceptually it should map to different inner class which are associated to different parametrized class(or just another instance of the parent class), there are treated as the same class.
+These parametrized class dependency can be achieve only through run-time Type information and actually, the difference cannot be detected at compile type. This is a limitation of using Java.
+Although conceptually dirty, but there are some advantage for this treatment of inner class. since it will reduce number of different class significantly, it would improve run-time performance.
 
-But the main forcus here is not to provide stisfactory static type checking, but to enable to utilize existing class through generics mechanism as functor.
+But the main focus here is not to provide satisfactory static type checking, but to enable to utilize existing class through generics mechanism as functor.
 
 
 [Goal]
 This code is essentially a collection of sample programs.
 So there is no common library to support this approach.
-The point here is to suggest to design pattern to enable to develope functor like generic class library.
+The point here is to suggest to design pattern to enable to develop functor like generic class library.
 
 [Demo]
 The most elaborated example here is the creation of a two variable polynomial ring.
 
-This example is a bit messey for repeated generic class declaration, but it can be shorten if we define a subclass for the applied generic class. 
+This example is a bit messy for repeated generic class declaration, but it can be shorten if we define a subclass for the applied generic class. 
 
 here is the top level code:
 
