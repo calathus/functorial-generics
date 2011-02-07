@@ -1,9 +1,12 @@
+[PDF version is available]
+https://github.com/calathus/functorial-generics/raw/master/ide/netbeans/doc/functorial-generics.pdf
+
+
 [functorial-generics]
 
 Author: nicolas calathus
 Date: Feb 6, 2011
 
------
 -----
 
 This is an attempt to find a proper reusable pattern to support Standard ML like functorial programming style in Java using Java's Generics.
