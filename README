@@ -21,15 +21,14 @@ But in Java, these generic parameters can be used to constraint the instance pro
 Also parametrized class itself does not enforce unique parametrized type for all the instances. since each time, we invoke new A<B>(), we may change B to other B1.
 As a result, B will not enforce class level restriction with this style.
 
-Also interface can be used only for specifying instance level constraints. 
+There are similar restrictions for interface, namely interface can be used only for specifying instance level constraints. 
 It cannot speficy a class level constraints, such as static methods, neither it can allow to access class property of parametrized class at runtime.
 
 These constraints are too weak to develop a framework to build library which allow to have 'recursive' generic class library, in which applied generics classes can be used as the parameter types for the same generics class from which they generated.    
 
 This kind of situation can be found in abstract algebra in Mathemetics quite often.
 
-In this sample code, we use polynomial ring for the principal means to explore this approach.
-Since it is not trivial and yet it is not too complaex.
+In this sample code, we use polynomial ring for the principal means to explore this approach since it is not too trivial and yet it is not too complex.
 
 This polynomial ring can be defined from aother coefficient ring.
 So the polynomial ring can be defined as a generic class which takes another ring in the generic type parameter, and create polynomial ring which again inplements ring 'signature'(or interface).
@@ -45,7 +44,7 @@ The goal of this approach is to avoid casting, and utilizing static type checkin
 
 [What is required for future Java]
 Although this approach will enable to develop 'functorical' generic class in systematic way.
-But also thi sindicate the weakness as Java prograqmming language.
+But also thi sindicate the weakness of Java as a prograqmming language.
 In general, if this style were well established as macro like pattern, it would be easy to incorporate in Java compiler directly.
 For instance it might be interetsting to modify openJDK to support this approach.
 
@@ -53,7 +52,7 @@ For instance it might be interetsting to modify openJDK to support this approach
 There are a few oddity we may face when using this approach.
 Largely it came form how Java inner (greric) class are implemented.
 Even though these class are inner class, the class itself does not inherit the class identity from the parent class. Therefore even conceptually it should map to different inner class which are associated to different parametrized class(or just another instance of the parent class), there are treate as the same class.
-These parametrized class dependency can be achieve only through runntime Type information and actually, the difference cannot be detected at compile type. This is a linmitation of using Java.
+These parametrized class dependency can be achieve only through runntime Type information and actually, the difference cannot be detected at compile type. This is a limitation of using Java.
 Although conceptually dirty, but there are some advantage for this treatement of innce class. sinece it will reduce number of differnt class significantly, it would improve runtime performance.
 
 But the main forcus here is not to provide stisfactory static type checking, but to enable to utilize existing class through generics mechanism as functor.
