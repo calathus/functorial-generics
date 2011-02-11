@@ -2,7 +2,7 @@ package com.ncalathus.sample.ring.api;
 
 public interface IAbstractRing {
 
-    public interface CLASS<REP extends INST> {
+    public interface CLASS<REP extends INST<REP>> {
 
         REP zero();
 
@@ -11,7 +11,7 @@ public interface IAbstractRing {
         REP neg_unit();
    }
 
-    public interface INST<REP extends INST> {
+    public interface INST<REP extends INST<REP>> {
 
         CLASS<REP> CLASS();
 
